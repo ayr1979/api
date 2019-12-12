@@ -62,6 +62,8 @@ namespace DatingApp.API.Controllers
         //[HttpGet("{companyid}", Name = "GetCompanyOrderParts")]
         public async Task<IActionResult> GetCompanyOrderParts(int companyid, [FromQuery]UserParams userParams)
         {
+            //if (companyid != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            //    return Unauthorized();
             var orderParts = await _repo.GetCompanyOrderParts(companyid, userParams);
             Response.AddPagination(orderParts.CurrentPage, orderParts.PageSize,
             orderParts.TotalCount, orderParts.TotalPages);

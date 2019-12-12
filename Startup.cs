@@ -22,6 +22,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using DatingApp.API.Controllers;
 using DatingApp.API.Data;
+using Microsoft.Extensions.Hosting;
 
 namespace DatingApp.API
 {
@@ -37,13 +38,18 @@ namespace DatingApp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers().AddNewtonsoftJson(opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling =
+                Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
             services.AddDbContext<DataContext>(x => x.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(opt =>
-                {
-                    opt.SerializerSettings.ReferenceLoopHandling =
-                        Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                });
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            //    .AddJsonOptions(opt =>
+            //    {
+            //        opt.SerializerSettings.ReferenceLoopHandling =
+            //            Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            //    });
             services.AddCors();
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(OrderPartRepository).Assembly);
@@ -69,13 +75,18 @@ namespace DatingApp.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureDevelopmentServices(IServiceCollection services)
         {
+            services.AddControllers().AddNewtonsoftJson(opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling =
+                Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
             services.AddDbContext<DataContext>(x => x.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
-                .AddJsonOptions(opt =>
-                {
-                    opt.SerializerSettings.ReferenceLoopHandling =
-                        Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                });
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
+            //    .AddJsonOptions(opt =>
+            //    {
+            //        opt.SerializerSettings.ReferenceLoopHandling =
+            //            Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            //    });
             services.AddCors();
             services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(OrderPartRepository).Assembly);
@@ -99,7 +110,7 @@ namespace DatingApp.API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -126,10 +137,19 @@ namespace DatingApp.API
 
             // app.UseHttpsRedirection();
             //seeder.SeedUsers();
+            app.UseRouting();
             app.UseCors(x => x.WithOrigins("http://localhost:4200")
                 .AllowAnyHeader().AllowAnyMethod().AllowCredentials());
             app.UseAuthentication();
-            app.UseMvc();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapFallbackToController("Index", "Fallback");
+            });
+            
+
+
 
 
         }
