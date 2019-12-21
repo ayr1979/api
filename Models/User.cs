@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace DatingApp.API.Models
 {
-    public class User
+    public class User: IdentityUser
     {
         public int Id { get; set; }
 

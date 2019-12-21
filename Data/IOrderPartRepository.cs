@@ -14,7 +14,7 @@ namespace DatingApp.API.Data
 
         Task<PagedList<OrderPart>> GetCompanyOrderParts(int companyid, UserParams userParams );
 
-
+        Task<string> GetCompanyName(int id);
         Task<OrderPart> GetOrderPart(int id);
         Task<bool> PartExists(string username);
         Task<bool> CompanyPartExists(int userid, int partid);

@@ -34,6 +34,12 @@ namespace DatingApp.API.Data
             return orderPart;
         }
 
+        public async Task<string> GetCompanyName(int id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return user.CompanyName;
+        }
+
         public async Task<bool> PartExists(string partname)
         {
             if (await _context.OrderParts.AnyAsync(x => x.PartName == partname))

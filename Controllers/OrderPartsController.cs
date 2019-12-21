@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
+using System.Net;
 
 namespace DatingApp.API.Controllers
 {
@@ -30,7 +32,7 @@ namespace DatingApp.API.Controllers
         [HttpPost("neworderpart")]
         public async Task<IActionResult> Register(OrderPart orderPart)
         {
-            
+
             if (await _repo.PartExists(orderPart.PartName))
                 return BadRequest("Part name already exists");
             _repo.Add<OrderPart>(orderPart);
@@ -71,12 +73,43 @@ namespace DatingApp.API.Controllers
         }
 
         [Route("GetOrderPart/{id}")]
-       
         public async Task<IActionResult> GetOrderPart(int id)
         {
             var orderPart = await _repo.GetOrderPart(id);
             return Ok(orderPart);
         }
+
+        [Route("SendEmail/{partid}")]
+        public async Task<IActionResult> SendEmail(int partid)
+        {
+            string email = "allanrodkin@gmail.com";
+            string password = "V1l0l5a4ayr";
+            string emailserver = "smtp.gmail.com";
+            int emailport = 587;
+            int userid = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            string companyname = await _repo.GetCompanyName(userid);
+            OrderPart part = await _repo.GetOrderPart(partid);
+            string partname = part.PartName;
+            string message = String.Format("{0} ordered part {1} at {2}", companyname, partname, System.DateTime.Now.ToShortDateString());
+            try
+            {
+                var client = new SmtpClient(emailserver, emailport)
+                {
+                     Credentials = new NetworkCredential(email,password),
+                     EnableSsl = true
+                };
+                await client.SendMailAsync("allanrodkin@gmail.com", "arod.winnipeg@gmail.com", "Part Order", message);
+                return new OkResult();
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Email Not Sent");
+            }
+            
+            
+        }
+
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrderPart(int id, OrderPart UpdatedOrderPart)
