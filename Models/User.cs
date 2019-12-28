@@ -5,15 +5,11 @@ using System.Collections.Generic;
 
 namespace DatingApp.API.Models
 {
-    public class User: IdentityUser
+    public class User: IdentityUser<int>
     {
-        public int Id { get; set; }
-
-        public string UserName { get; set; }
+   
         public string CompanyName { get; set; }
         public string Password { get; set; }
-        public byte[] PasswordHash { get; set; }
-        public byte[] PasswordSalt { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
         public string Address { get; set; }
@@ -22,6 +18,7 @@ namespace DatingApp.API.Models
         public string Telephone { get; set; }
         public ICollection<Photo> Photos { get; set; }
 
+        public virtual ICollection<UserRole> UserRoles { get; set; }
         public User()
         {
             Created = System.DateTime.Now;
