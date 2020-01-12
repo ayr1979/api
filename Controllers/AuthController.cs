@@ -29,35 +29,49 @@ namespace DatingApp.API.Controllers
         public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper 
         ,UserManager<User> userManager, SignInManager<User> signInManager   )
         {
-            //this._signInManager = signInManager;
-            //this._userManager = userManager;
+            this._signInManager = signInManager;
+            this._userManager = userManager;
             _mapper = mapper;
             _config = config;
             _repo = repo;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(UserForRegisterDto userForRegisterDto)
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(User user)
         {
-            userForRegisterDto.CompanyName = userForRegisterDto.CompanyName.ToLower();
 
-            if (await _repo.UserExists(userForRegisterDto.CompanyName))
-                return BadRequest("Username already exists");
+           // user.UserName = user.CompanyName;
 
-            var userToCreate = _mapper.Map<User>(userForRegisterDto);
+            //var userToCreate = _mapper.Map<User>(user);
 
-            var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
+            try
+            { 
+            var result = await _userManager.CreateAsync(user, user.Password);
+            
+            //var userToReturn = _mapper.Map<UserForDetailedDto>(userToCreate);
 
-            var userToReturn = _mapper.Map<UserForDetailedDto>(createdUser);
+            if (result.Succeeded)
+            {
+                return CreatedAtRoute("GetUser", new { controller = "Users", id = user.Id }, user);
+            }
 
-            return CreatedAtRoute("GetUser", new { controller = "Users", id = createdUser.Id }, userToReturn);
+            return BadRequest("Failed to Register");
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
         }
 
         [HttpPost("login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-            var user = await _userManager.FindByNameAsync(userForLoginDto.Username);
-
+            try
+            {
+                var user = await _userManager.FindByNameAsync(userForLoginDto.Username);
+          
             var result = await _signInManager.CheckPasswordSignInAsync(user, userForLoginDto.Password, false);
 
             if (result.Succeeded)
@@ -72,7 +86,9 @@ namespace DatingApp.API.Controllers
                 });
             }
 
-
+            }
+            catch (Exception e)
+            { }
             return Unauthorized();
 
             

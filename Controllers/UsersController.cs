@@ -16,6 +16,7 @@ namespace DatingApp.API.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class UsersController : ControllerBase
     {
         private readonly IDatingRepository _repo;
@@ -27,6 +28,17 @@ namespace DatingApp.API.Controllers
             _repo = repo;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("GetUsers2")]
+        public async Task<IActionResult> GetUsers2()
+        {
+            var users = await _repo.GetUsers2();
+            if (users != null)
+                return Ok(users);
+            else
+                return BadRequest("API call to get users failed");
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetUsers([FromQuery]UserParams userParams)
@@ -44,7 +56,7 @@ namespace DatingApp.API.Controllers
             Response.AddPagination(users.CurrentPage, users.PageSize,
                 users.TotalCount, users.TotalPages);
 
-            return Ok(usersToReturn);
+            return Ok(users);
         }
 
         [HttpGet("{id}", Name = "GetUser")]

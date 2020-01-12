@@ -18,6 +18,7 @@ namespace DatingApp.API.Controllers
 {
     //[ServiceFilter(typeof(LogUserActivity))]
     [Route("api/[controller]")]
+    [AllowAnonymous]
     [ApiController]
     public class OrderPartController : ControllerBase
     {
@@ -52,6 +53,7 @@ namespace DatingApp.API.Controllers
 
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetOrderParts([FromQuery]UserParams userParams)
         {
             var orderParts = await _repo.GetOrderParts(userParams);
