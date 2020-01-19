@@ -34,6 +34,11 @@ namespace DatingApp.API.Data
             return orderPart;
         }
 
+        public async Task<List<OrderPart>> GetParts2()
+        {
+            return await _context.OrderParts.Include(p => p.Photos).ToListAsync<OrderPart>();
+        }
+
         public async Task<string> GetCompanyName(int id)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);

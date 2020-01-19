@@ -31,6 +31,18 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpPost("neworderpart")]
+
+        [HttpGet]
+        [Route("GetParts2")]
+        public async Task<IActionResult> GetParts2()
+        {
+            var users = await _repo.GetParts2();
+            if (users != null)
+                return Ok(users);
+            else
+                return BadRequest("API call to get users failed");
+        }
+
         public async Task<IActionResult> Register(OrderPart orderPart)
         {
 
@@ -66,8 +78,8 @@ namespace DatingApp.API.Controllers
         //[HttpGet("{companyid}", Name = "GetCompanyOrderParts")]
         public async Task<IActionResult> GetCompanyOrderParts(int companyid, [FromQuery]UserParams userParams)
         {
-            //if (companyid != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
-            //    return Unauthorized();
+            if (companyid != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+                return Unauthorized();
             var orderParts = await _repo.GetCompanyOrderParts(companyid, userParams);
             Response.AddPagination(orderParts.CurrentPage, orderParts.PageSize,
             orderParts.TotalCount, orderParts.TotalPages);

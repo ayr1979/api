@@ -29,7 +29,6 @@ namespace DatingApp.API.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         [Route("GetUsers2")]
         public async Task<IActionResult> GetUsers2()
         {

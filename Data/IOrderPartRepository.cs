@@ -11,7 +11,7 @@ namespace DatingApp.API.Data
         void Delete<T>(T entity) where T : class;
         Task<bool> SaveAll();
         Task<PagedList<OrderPart>> GetOrderParts(UserParams userParams);
-
+        Task<List<OrderPart>> GetParts2();
         Task<PagedList<OrderPart>> GetCompanyOrderParts(int companyid, UserParams userParams );
 
         Task<string> GetCompanyName(int id);

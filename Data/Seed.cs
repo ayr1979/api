@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using DatingApp.API.Models;
+using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
 
 namespace DatingApp.API.Data
@@ -8,25 +9,29 @@ namespace DatingApp.API.Data
     public class Seed
     {
         
-        public static void SeedUsers(DataContext context)
+        public static void SeedUsers(UserManager<User> userManager, RoleManager<Role> roleManager)
         {
-            if (!context.Users.Any())
-            {
-                var userData = System.IO.File.ReadAllText("Data/UserSeedData.json");
-                var users = JsonConvert.DeserializeObject<List<User>>(userData);
-                foreach (var user in users)
-                {
-                    byte[] passwordHash, passwordSalt;
-                    CreatePasswordHash("password", out passwordHash, out passwordSalt);
-                    //user.PasswordHash = passwordHash;
-                    //user.PasswordSalt = passwordSalt;
-                    user.UserName = user.UserName.ToLower();
+            //var roles = new List<Role>
+            //{
+            //    new Role{Name = "Admin"}
+            //};
+            //if (!context.Users.Any())
+            //{
+            //    var userData = System.IO.File.ReadAllText("Data/UserSeedData.json");
+            //    var users = JsonConvert.DeserializeObject<List<User>>(userData);
+            //    foreach (var user in users)
+            //    {
+            //        byte[] passwordHash, passwordSalt;
+            //        CreatePasswordHash("password", out passwordHash, out passwordSalt);
+            //        //user.PasswordHash = passwordHash;
+            //        //user.PasswordSalt = passwordSalt;
+            //        user.UserName = user.UserName.ToLower();
 
-                    context.Users.Add(user);
-                }
+            //        context.Users.Add(user);
+            //    }
 
-                context.SaveChanges();
-            }
+            //    context.SaveChanges();
+            //}
             
         }
 
